@@ -55,6 +55,7 @@ buff_clev_simple <- buff_clev_simple %>%
   mutate(post_2014 = ifelse(date >= as.Date("2014-04-01"), 1, 0))
 buff_clev_simple <- buff_clev_simple %>%
   mutate(treated = uber_legal * post_2014)
+write.csv(buff_clev_simple, "data/buff_clev_simple.csv", row.names = FALSE) #Saving full data
 
 # Run the difference-in-differences regression
 model <- lm(ridership ~ post_2014 + uber_legal + uber_legal * post_2014, data = buff_clev_simple)
