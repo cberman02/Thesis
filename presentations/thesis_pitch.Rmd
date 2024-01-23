@@ -13,6 +13,7 @@ source("../code/housekeeping.R")
 
 ## Background and Literature
 * Declining Public Transportation Usage
+* First Mile/Last Mile Problem (FM/LM)
 * TNC's Impact on Public Transportation
   * Reduces public transit demand in cities with "high urban compactness" (Lee, et. al 2019)
   * Serves as compliment (net) but masks heterogeneity (Hall, et. al 2018)
