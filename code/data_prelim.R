@@ -3,7 +3,7 @@ transit <- read_excel(paste0("data/",'transit_data.xlsx'), sheet = "UPT") %>%
 rail <- transit %>%
   filter(x3_mode == "Rail")
 buff_clev <- rail %>%
-  filter(uza_name == "Buffalo, NY" | uza_name == "Cleveland, OH")
+  filter(uza_name == "Buffalo, NY" | uza_name == "Cleveland, OH" | (uza_name == "Pittsburgh, PA" & mode != "IP"))
 
 #Cleaning cols to represent date better
 exclude_columns <- 1:10 # Specify the columns to exclude
@@ -34,16 +34,17 @@ buff_clev_simple$date <- as.Date(paste(buff_clev_simple$month, buff_clev_simple$
 
 
 
-buff_clev_abbr <- buff_clev_simple %>% 
-  filter(year >= 2012 & year <= 2016)
+buff_clev_simple <- buff_clev_simple %>% 
+  filter(year < 2020) #Getting rid of covid years
 # Create the line plot
-ggplot(buff_clev_abbr, aes(x = date, y = ridership, group = agency, color = as.factor(agency))) +
+ggplot(buff_clev_simple, aes(x = date, y = log(ridership), group = agency, color = as.factor(agency))) +
   geom_line() +
   labs(title = "Ridership Over Time",
        x = "Date",
        y = "Ridership",
        color = "Agency") +
   scale_y_continuous(labels = scales::number_format()) +
+  geom_vline(xintercept = as.Date("2014-04-01"), color = "red", linetype = "dashed") + # Add a red dashed vertical line
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Optional: Rotate x-axis labels for better visibility
 

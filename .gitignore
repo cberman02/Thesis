@@ -6,6 +6,7 @@
 *.csv
 *.dta
 *.Rdata
+*.pdf
 
 # Session Data files
 .RData

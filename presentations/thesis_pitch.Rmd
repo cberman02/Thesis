@@ -13,22 +13,52 @@ source("../code/housekeeping.R")
 
 ## Background and Literature
 * Declining Public Transportation Usage
-  * FM/LM Problem
 * TNC's Impact on Public Transportation
-  * Declining Ridership
-  * Negative
+  * Reduces public transit demand in cities with "high urban compactness" (Lee, et. al 2019)
+  * Serves as compliment (net) but masks heterogeneity (Hall, et. al 2018)
+  * Serves as compliment to high quality public transit but substitute to low quality transit (Zhao 2019)
   
 ## Research Question and Methodology
 
-- Bullet 1
-- Bullet 2
-- Bullet 3
-
-## Data Sources
-
-```{r cars, echo = TRUE}
+* Can Uber be used to supplement public transportation by offering a solution to the FM/LM problem?
+  * Diff-in-diff comparing Buffalo and similar cities
+  * Spatial analysis of customers added with introduction of Uber (?)
+  
+```{r,echo=FALSE, message=FALSE, out.width="70%",fig.align='center'}
 df <- read_csv("../data/buff_clev_simple.csv")
-both_rows <- rbind(head(df, n=3), tail(df, n=3))
-print(both_rows[1:5])
+df <- df %>%
+  filter(year < 2020)
+ggplot(df, aes(x = date, y = ridership, group = agency, color = as.factor(agency))) +
+  geom_line() +
+  labs(title = "Ridership Over Time",
+       x = "Date",
+       y = "Ridership",
+       color = "Agency") +
+  scale_y_continuous(labels = scales::number_format()) +
+  geom_vline(xintercept = as.Date("2014-04-01"), color = "blue", linetype = "solid") + # Add a red dashed vertical line
+  geom_vline(xintercept = as.Date("2014-03-13"), color = "green", linetype = "dashed") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Optional: Rotate x-axis labels for better visibility
 ```
 
+
+## Data Sources
+* National Transit Database (NTD)
+  * Contains monthly ridership data from 2002-present for all public transportation agencies that receive federal funding
+* Google search data
+
+```{r, echo=FALSE, message=FALSE, out.width="70%"}
+both_rows <- rbind(head(df, n=3), tail(df, n=3))
+both_rows %>%
+  kable("html", align = "c") %>%
+  kable_styling(full_width = FALSE, position = "center", font_size = 12)
+#print(both_rows[1:5])
+```
+
+## References
+Hall, J. D., Palsson, C., and Price, J. (2018). Is uber a substitute or complement for public
+transit? Journal of Urban Economics, 108:36–50.
+
+Lee, Kyunghee and Jin, Qianran and Animesh, Animesh and Ramaprasad, Jui, Impact of Ride-Hailing Services on Transportation Mode Choices: Evidence from Traffic and Transit Ridership (October 31, 2019). Forthcoming at MIS Quarterly, Available at SSRN: https://ssrn.com/abstract=3244207 or http://dx.doi.org/10.2139/ssrn.3244207
+
+Zhao, W. (2019). The Long Run Effects of Uber on Public Transit, Congestion, Sprawl, and the Environment.
