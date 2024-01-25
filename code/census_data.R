@@ -48,6 +48,6 @@ all_uza <- all_uza %>%
     values_from = "estimate"
   )
 
-colnames(all_uza) <- c("geoid","uza","year","med_age", "pop","white","black","asian","hispanic","poverty","med_house_income","bach")
+colnames(all_uza) <- c("geoid","uza_name","year","med_age", "pop","white","black","asian","hispanic","poverty","med_house_income","bach")
 
 write_csv(all_uza, "data/all_uza.csv")
