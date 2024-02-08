@@ -1,0 +1,115 @@
+---
+title: "TNC Integration and Subsidization as a Compliment to Public Transportation"
+author: "Charlie Berman"
+date: "`r Sys.Date()`"
+output: beamer_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+source("../code/housekeeping.R")
+df <- read_csv("../data/census_transit.csv")
+```
+
+## Background
+* Declining Public Transportation Usage
+* Corresponds with the rise of Transportation Network Companies (TNCs)
+```{r, echo=FALSE, message=FALSE, out.width="70%"}
+overall_avg_ridership <- aggregate(ridership ~ date, data = df, FUN = mean)
+
+ggplot(overall_avg_ridership, aes(x = date, y = ridership)) +
+  geom_line() +
+  labs(title = "Average Ridership Over Time",
+       subtitle = "Across all Transit Agencies",
+       x = "Date",
+       y = "Ridership",
+       color = "Agency") +
+  geom_smooth(method = "lm", se = TRUE, color = "red", linetype = "dashed") +
+  scale_y_continuous(labels = scales::number_format()) +
+  scale_color_manual(values = wes_palette) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Optional: Rotate x-axis labels for better visibility
+```
+
+## Background
+* Public transit companies partner with TNCs
+  * Pinellas County subsidies
+  * Atlanta, GA MARTA on the Go
+```{r, echo=FALSE,out.width = "70%"}
+knitr::include_graphics("martaconnect-page-banner2.jpg")
+```
+  
+## Literature
+* Erhardt, et al. (2022) claim TNCs are the biggest driver of transit ridership decline using NTD data
+* Hall, et al. (2018) find that TNCs are a net compliment to public transit but lots of variation using diff-in-diff
+* Zhao (2019) finds that TNCs are a compliment to good transit, substitute to bad using monocentric city model
+* Agrawal, et al. (2023) finds that subsidizing TNCs increases ridership substantially using monocentric city model
+
+## Research Question
+* What is the effect on ridership for public transportation agencies that partner with TNCs?
+  * Subsidies
+  * Promotion(?)
+
+## Methodology
+* Difference-in-difference
+  * Treatment: Public transportation agencies that partner with TNCs
+  * Control: Public transportation agencies that do not partner with TNCs
+  * Time: Before and after partnership
+* Considerations
+  * Subsetting the dataset
+  * Partnership times. Will there be enough data post treatment?
+
+## Data Sources
+* National Transit Database (NTD)
+  * Contains monthly ridership data from 2005-2019 for all public transportation agencies that receive federal funding
+* American Community Survey (ACS)
+  * Contains yearly demographic data for all urbanized areas (+65,000 population)
+  * Consider using CPS (monthly)
+\tiny
+```{r, echo=FALSE, message=FALSE, out.width="30%", out.height="60%"}
+options(width = 60)
+head(df)
+```
+
+## Preliminary Results
+* Limited to FL
+* Diff-in-diff of Pinellas County vs. rest of FL
+\tiny
+```{r, echo=FALSE, message=FALSE, out.width="40%", out.height="60%"}
+options(width = 30)
+analysis_fl <- read_csv("../data/census_transit_fl.csv")
+
+didreg <- feols(
+  fml = ridership ~ pop + white + med_house_income + poverty + treated + time + treated*time,
+  vcov = "iid",
+  data = analysis_fl
+)
+didreg_fe <- feols(
+  fml = ridership ~ pop + white + med_house_income + poverty + treated + time + treated*time | month,
+  vcov = "iid",
+  data = analysis_fl
+)
+etable(
+  didreg, didreg_fe, 
+  coefstat = "tstat", digits = 3, digits.stats = 3
+)
+```
+
+## Potential Issues
+* Classifying partnerships/finding information (changes over time)
+* Ensuring that all agencies are classified as treated or control correctly
+
+## References
+[Agrawal and Zhao, 2023] Agrawal, D. R. and Zhao, W. (2023). Taxing uber. Journal of
+Public Economics, 221:104862.
+
+[Erhardt et al., 2022] Erhardt, G. D., Hoque, J. M., Goyal, V., Berrebi, S., Brakewood,
+C., and Watkins, K. E. (2022). Why has public transit ridership declined in the united
+states? Transportation Research Part A: Policy and Practice, 161:68–87.
+
+[Hall et al., 2018] Hall, J. D., Palsson, C., and Price, J. (2018). Is uber a substitute or
+complement for public transit? Journal of Urban Economics, 108:36–50.
+
+[Zhao, 2019] Zhao, W. (2019). The long run effects of uber on public transit, congestion,
+sprawl, and the environment.
+
