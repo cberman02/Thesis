@@ -60,3 +60,14 @@ rsconnect/
 *.Rdata
 *.tsv
 *.zip
+
+# latex files
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
+*.fdb_latexmk
+*.fls
+*.synctex.gz
+writing/Thesis_Introduction.log
