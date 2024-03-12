@@ -10,7 +10,6 @@ survey <- "acs1"
 # Variables of interest for Urbanized Areas
 vars <- c(
   "B01003_001",  # Total population
-  "B24114_001", #Civilian employed population (16+), proxy for number of jobs
   "B19013_001",   # Median household income
   "B17005_002", # Poverty Status
   "B23006_023", # Bachelors Degree or higher
@@ -23,7 +22,8 @@ vars <- c(
 )
 
 # Years from 2005 to present
-years <- 2005:2019
+years <- 2006:2022
+years <- years[years != 2020] #2020 data is missing
 
 # Initialize an empty data frame to store results
 all_uza <- data.frame()
