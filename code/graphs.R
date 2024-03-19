@@ -11,7 +11,7 @@ avg_rides <-transit_data %>%
 #Avg rides per month
 avg_rides_plot <- ggplot(avg_rides,aes(x = ridership)) +
   geom_histogram(binwidth = 200000, fill = "skyblue", color = "black", alpha = 0.8) +
-  labs(title = "Histogram of Average Ridership per Month",
+  labs(title = "Average Ridership per Month",
        x = "Average Ridership") +
   theme_minimal() +
   scale_x_continuous(labels = function(x) format(x, scientific = FALSE))
@@ -21,7 +21,7 @@ avg_rides <- avg_rides %>%
 
 avg_rides_no_nyc <- ggplot(avg_rides,aes(x = ridership)) +
   geom_histogram(binwidth = 200000, fill = "skyblue", color = "black", alpha = 0.8) +
-  labs(title = "Histogram of Average Ridership per Month", 
+  labs(title = "Average Ridership per Month", 
        x = "Average Ridership",
        caption = "Without MTA New York City Transit") +
   theme_minimal() +
@@ -45,6 +45,7 @@ ggplot(uza_agency_counts, aes(x = unique_agencies)) +
 ggsave("images/avg_agencies_uza.png")
 
 # COEFFICIENT PLOT
+#Creating table of t test values
 t_test_df <- data.frame()
 for (i in 2005:2020) {
   pre_covid_year <- pre_covid %>%
@@ -53,18 +54,31 @@ for (i in 2005:2020) {
   t_test_df <- rbind(t_test_df, data.frame(year = i, coefficient = t_test_result$estimate, 
                                            lower_ci = t_test_result$conf.int[1], upper_ci = t_test_result$conf.int[2]))
 }
-
-
+#Bit of nonsense to remove duplicates and format the table nicely
+t_test_year <- t_test_df %>%
+  select(year, lower_ci, upper_ci) %>%
+  unique()
+t_test_df <- tibble::rowid_to_column(t_test_df, "group") %>%
+  mutate(group = ifelse(group %% 2 != 0, "control", "treated"))
+t_test_coeff <- t_test_df %>%
+  select(year, coefficient, group) %>%
+  pivot_wider(names_from = group, values_from = coefficient, names_prefix = "group")
+t_test_df <- merge(t_test_coeff, t_test_year, by = "year") %>%
+  rename(control = groupcontrol, treated = grouptreated)
+t_test_df$diff <- t_test_df$control-t_test_df$treated
+#xtable(t_test_df, type = "latex")
 
 # Plot
-ggplot(t_test_results_df, aes(x = paste(month, year), y = coefficient, ymin = lower_ci, ymax = upper_ci, fill = treated)) +
-  geom_bar(stat = "identity", position = "dodge") +
-  geom_errorbar(position = position_dodge(width = 0.9), width = 0.25) +
-  labs(title = "Difference in Ridership between Control and Treatment Groups",
-       x = "Month/Year",
-       y = "Coefficient",
-       fill = "Group") +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
+ggplot(t_test_df, aes(x = factor(year))) +
+  geom_point(aes(y = diff), color = "blue") +
+  geom_errorbar(aes(ymin = lower_ci, ymax = upper_ci), width = 0.2) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red") +  # Add a line at y = 0
+  labs(title = "Difference between Treated and Control Ridership",
+       x = "Year",
+       y = "Difference") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+ggsave("images/coeff_plot.png")
 
 
 #Ridership month by month
