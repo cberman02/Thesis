@@ -1,0 +1,45 @@
+\documentclass [11pt]{article}
+\usepackage{booktabs}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{dcolumn}
+\usepackage{float}
+\usepackage{tabularx}
+\restylefloat{table}
+
+\title{TNC Integration and Subsidization as a Compliment to Public Transportation}
+\author{Charlie Berman}
+
+\begin{document}
+\maketitle
+
+\section*{Methods}
+In order to estimate the effect that an Uber voucher program can have on public transit ridership, I compare ridership for agencies where an Uber voucher program is in place to agencies with no such program. The dependent variable is the monthly unlinked passenger trips every month for a specific agency. The ridership variable is not city wide, so it is technically possible for ridership to increase for an agency, yet remain unchanged for a city if that city has multiple transit agencies. \\ %Can pivot to UZA controls
+\indent To estimate this effect, I use a difference in difference model, as shown below. 
+%Might add population and rankings controls. Rankings controls only exist for 135 MSAs and current population controls are not significant. See Data and Regression tables for variations
+$$Y_{i,t} = \beta_0 + \beta_1 D_{i,t} + \gamma_i + \delta_t + \epsilon$$
+$Y_{it}$ represents the log of agency ridership, and is regressed on $D_{it}$, which is whether a city has an Uber voucher program during that specified month/year. Given the outliers that exist in public transit ridership (e.g. New York City, Chicago, etc.), transforming the dependent variable to the log of ridership will yield more accurate results. I believe that this interaction will have a positive effect on $Y_{it}$. \\
+\indent I also include month/year and agency fixed effects to account for changes in transit culture and weather across the data. Since ridership is reported on the 1st of every month, the date variable suffices for month/year fixed effects. Agency fixed effects should account for variation in demand and demographics among UZAs, rendering specific population and socioeconomic controls unnecessary. They will also likely account for differences in transit system quality. The full list of variables, along with the variable names used in the code, can be found in Table 1 below.\\
+% Might use total UZA ridership instead of transit agency ridership. Results of that regression in Data and Regression tables page
+\begin{table}[H]
+    \begin{minipage}{\textwidth}
+        \caption{Explanation of Variables}
+        \centering
+        \begin{tabular}{|c|c|p{9cm}|}
+            \hline
+            \textbf{Variable} & \textbf{Codebook Name} & \textbf{Explanation} \\
+            \hline
+            $Y_{it}$ & log(ridership) & Unlinked passenger trips (UTP) per month for transit agency \\
+            $D_{it}$ & treated $\times$ time & 1 if transit agency $i$ is partnered with Uber in month $t$, 0 otherwise \\
+            $\gamma_i$ & agency & Fixed effects for the transit agency $i$ is located \\
+            $\delta_t$ & date & Fixed effects for month, year. In the format $YYYY-MM-01$ (always recorded on 1st of every month)\\
+            \hline
+        \end{tabular}
+    \end{minipage}
+\end{table}
+\indent Key assumptions are that the agencies in the treatment and control are experiencing parallel growth prior to the intervention of Uber vouchers, and that agencies are facing the same issues. If an agency is experiencing booming growth, they would be unlikely to implement different policies. Additionally, I assume that each agency in the untreated group choose either to do nothing or enact the same policies instead of creating an Uber voucher program.\\
+
+
+
+\end{document}

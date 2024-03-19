@@ -60,16 +60,4 @@ all_uza$asian <- all_uza$asian / all_uza$pop
 all_uza$hispanic <- all_uza$hispanic / all_uza$pop
 all_uza$poverty <- all_uza$poverty / all_uza$pop
 
-#Cleaning UZA names for easier merge
-census_data$uza_name <- sub("([A-Z]{2}).*", "\\1", census_data$uza_name) # Limiting census uza names
-census_data$uza_name <- gsub("--\\w+\\b", "", census_data$uza_name)
-census_data$uza_name <- trimws(gsub("(?i)urban", "", census_data$uza_name)) #removing urban
-census_data$uza_name <- ifelse(census_data$uza_name == "Los Angeles Beach Ana, CA" | 
-                                 census_data$uza_name == "Los Angeles Beach, CA", 
-                               "Los Angeles, CA", census_data$uza_name)
-census_data$uza_name <- ifelse(census_data$uza_name == "New York, NY", 
-                               "New York City, NY", census_data$uza_name) #changing New York to NYC
-census_data$uza_name <- ifelse(census_data$uza_name == "Salt Lake City Valley City, UT", 
-                               "Salt Lake City, UT", census_data$uza_name) #Changing to salt lake city
-
 write_csv(all_uza, "data/all_uza.csv")

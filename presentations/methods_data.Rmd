@@ -58,7 +58,7 @@ reg_pre_covid <- reg_pre_covid %>%
 reg_pre_covid$time <- ifelse(reg_pre_covid$date > "2019-12-01", 1, 0)
  
  # DiD regression with fixed effects using feols
-did_base <- feols(ridership ~ treated:time, data = reg_pre_covid)
+did_base <- feols(ridership ~ treated:time, data = reg_pre_covid, vcov = agency)
 did_fe <- feols(ridership ~ treated:time | month + state, data = reg_pre_covid)
 did_ln <- feols(log(ridership) ~ treated:time | month + state, data = reg_pre_covid)
 
