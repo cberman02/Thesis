@@ -16,7 +16,7 @@
 \maketitle
 
 \section*{Regressions}
-
+%All regressions come from code/prelim_analysis.r. Output usually comes from etable(tex=T) and this might not be how the code is written now, as it is easier to read without converting to latex. That being said, the standard etable results are the same as the tables that appear here.
 \subsection*{Basic Regressions}
 \begingroup
 \centering
@@ -268,6 +268,7 @@ Based on this, it seems that population controls are unnecessary or not useful. 
 
 \newpage
 \section*{Charts}
+%All graphs used here are in the images folder, labeled by the same name. The code to great all the graphs are in code/graphs.r
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{avg_rides_per_agency.png} % Adjust width as needed
@@ -283,6 +284,13 @@ Based on this, it seems that population controls are unnecessary or not useful. 
     \includegraphics[width=0.8\textwidth]{avg_ridership_over_time.png} % Adjust width as needed
     \caption{Ridership over time}
 \end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{avg_agency_score.png} % Adjust width as needed
+    \caption{Distribution of agency scores}
+\end{figure}
+\textbf{Notes}
+According to AllTransit (through email correspondence), a score of 7+ is a "good" transit system by US standards. This is done at UZA level, not agency level so should be used with total ridership, not agency ridership
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{coeff_plot.png} % Adjust width as needed
