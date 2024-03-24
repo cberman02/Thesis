@@ -51,7 +51,7 @@ all_uza <- all_uza %>%
     values_from = "estimate"
   )
 
-colnames(all_uza) <- c("geoid","uza_name","year","med_age", "pop","white","black","asian","hispanic","poverty","med_house_income","bach")
+colnames(all_uza) <- c("geoid","uza_name","year","med_age", "pop","white","black","asian","hispanic","poverty","med_house_income","bach","num_vehic_commute")
 
 #Converting below vars to proportions
 all_uza$white <- all_uza$white / all_uza$pop
@@ -60,4 +60,4 @@ all_uza$asian <- all_uza$asian / all_uza$pop
 all_uza$hispanic <- all_uza$hispanic / all_uza$pop
 all_uza$poverty <- all_uza$poverty / all_uza$pop
 
-write_csv(all_uza, "data/all_uza.csv")
+write_csv(all_uza, "data/clean/all_uza.csv")

@@ -266,6 +266,36 @@ I am using the pre-COVID dataset. Since I have statistically significant results
 We see that there is no statistical significance attributed to population/ACS controls that I currently have access too. Changing from UZA ridership to Agency ridership had no effect on significance when using log. The exception is for median age in agency ridership, which had some statistical significance but I am not convinced it adds to the model.\\
 Based on this, it seems that population controls are unnecessary or not useful. Perhaps different variables need to be used?
 
+\subsection*{Robustness Checks}
+\begingroup
+\centering
+\begin{tabular}{lcc}
+   \tabularnewline \midrule \midrule
+   Dependent Variables:   & ridership            & log(ridership)\\  
+   Model:                 & (1)                  & (2)\\  
+   \midrule
+   \emph{Variables}\\
+   treated $\times$ time  & 248,769.5$^{***}$    & -0.7765$^{***}$\\   
+                          & (94,966.1)           & (0.1115)\\   
+   \midrule
+   \emph{Fixed-effects}\\
+   agency                 & Yes                  & Yes\\  
+   date                   & Yes                  & Yes\\  
+   \midrule
+   \emph{Fit statistics}\\
+   Observations           & 275,055              & 275,055\\  
+   R$^2$                  & 0.99435              & 0.79700\\  
+   Within R$^2$           & $8.5\times 10^{-6}$  & $3.95\times 10^{-5}$\\   
+   \midrule \midrule
+   \multicolumn{3}{l}{\emph{Clustered (agency) standard-errors in parentheses}}\\
+   \multicolumn{3}{l}{\emph{Signif. Codes: ***: 0.01, **: 0.05, *: 0.1}}\\
+\end{tabular}
+\par\endgroup
+
+\textbf{Notes}\\
+Treatment group is Hillsborough Area Regional Transit Authority, The Eastern Contra Costa Transit Authority and the Town of Chapel Hill. These all border the original pre-COVID treatment group and do not have Uber voucher programs-- though some go on to create a program after the dataset ends. \\
+\indent Using this check, we can subtract this coefficient from the original coefficient to find that $\beta_{1,\text{treated}} - \beta_{1,\text{placebo}}-0.7074 - (-0.7765)= 0.0691$. I exponentiate this coefficient to find that the effect on ridership is 1.07, or a 7\% increase in transit ridership.
+
 \newpage
 \section*{Charts}
 %All graphs used here are in the images folder, labeled by the same name. The code to great all the graphs are in code/graphs.r
@@ -286,6 +316,16 @@ Based on this, it seems that population controls are unnecessary or not useful. 
 \end{figure}
 \begin{figure}[H]
     \centering
+    \includegraphics[width=0.8\textwidth]{avg_ridership_over_time_treated.png} % Adjust width as needed
+    \caption{Ridership over time, Treated vs. Control}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{avg_ridership_over_time_placebo.png} % Adjust width as needed
+    \caption{Ridership over time, Treated vs. Placebo}
+\end{figure}
+\begin{figure}[H]
+    \centering
     \includegraphics[width=0.8\textwidth]{avg_agency_score.png} % Adjust width as needed
     \caption{Distribution of agency scores}
 \end{figure}
@@ -297,7 +337,7 @@ According to AllTransit (through email correspondence), a score of 7+ is a "good
     \caption{Coefficient plot of log(ridership)}
 \end{figure}
 \textbf{Notes}
-This bodes poorly.
+From 2016-01-01 to 2020-03-01
 
 
 

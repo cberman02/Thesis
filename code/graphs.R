@@ -3,6 +3,10 @@ pre_covid <- read.csv("data/pre_covid.csv")
 with_covid <- read.csv("data/with_covid.csv")
 transit_rankings <- read.csv("data/transit_rankings.csv")
 transit_data$date <- as.Date(transit_data$date)
+pre_covid$date <- as.Date(pre_covid$date)
+with_covid$date <- as.Date(with_covid$date)
+
+
 
 avg_rides <-transit_data %>%
   group_by(agency) %>%
@@ -52,9 +56,7 @@ did_uza_ln <- feols(log(ridership) ~ i(date, treated, "2019-12-01") |+ ## Our ke
                     agency + date,                             ## FEs
                     cluster = ~agency,                          ## Clustered SEs
                     data = pre_covid_abbr)
-#iplot(did_uza_ln, 
-      #xlab = 'Time to treatment',
-      #main = 'Coefficient Plot') 
+
 pre_covid_abbr <- pre_covid_abbr %>%
   filter(date != "2019-12-01") #filtering out date to prevent colinearity
 
@@ -69,8 +71,9 @@ ggplot(graph_df, aes(x = date, y = coef)) +
   geom_hline(yintercept = 0, linetype = "dashed", color = "blue") +
   scale_x_date(date_breaks = "1 year", date_labels = "%Y") +  # Abbreviate x-axis labels to display only the year
   labs(x = "Year", y = "Coefficient", title = "Coefficient Plot")
+ggsave("images/coeff_plot.png")
 
-# Plot
+#Plot
 ggplot(t_test_df, aes(x = factor(year))) +
   geom_point(aes(y = diff), color = "blue") +
   geom_errorbar(aes(ymin = lower_ci, ymax = upper_ci), width = 0.2) +
@@ -120,3 +123,51 @@ ggplot(transit_rankings,aes(x = score)) +
   theme_minimal() 
 ggsave("images/avg_agency_score.png")
 
+#Ridership month over month with separated treatment and controls
+avg_ridership_control <- pre_covid %>%
+  filter(treated == 0) %>%
+  group_by(date) %>%
+  summarise(log_ridership = mean(log(ridership)))
+avg_ridership_treated <- pre_covid %>%
+  filter(treated == 1) %>%
+  group_by(date) %>%
+  summarise(log_ridership = mean(log(ridership)))
+
+ggplot() +
+  geom_line(data = avg_ridership_treated, aes(x = date, y = log_ridership, color = "Treated")) +
+  geom_line(data = avg_ridership_control, aes(x = date, y = log_ridership, color = "Untreated")) +
+  labs(title = "Average Ridership Over Time",
+       x = "Date",
+       y = "Average Ridership",
+       color = "Treatment Status") +
+  theme_minimal()
+ggsave("images/avg_ridership_over_time_treated.png")
+
+#Establishing placebo parallel
+placebo <- pre_covid
+placebo$treated <- ifelse(placebo$agency %in%
+                              c("Pinellas Suncoast Transit Authority",
+                                "Livermore / Amador Valley Transit Authority",
+                                "Research Triangle Regional Public Transportation Authority"), 0, 0)
+placebo$treated <- ifelse(placebo$agency %in%
+                              c("Hillsborough Area Regional Transit Authority",
+                                "The Eastern Contra Costa Transit Authority",
+                                "Town of Chapel Hill"), 1, 0)
+avg_ridership_treated <- pre_covid %>%
+  filter(treated == 1) %>%
+  group_by(date) %>%
+  summarise(log_ridership = mean(log(ridership)))
+avg_ridership_placebo <- placebo %>%
+  filter(treated == 1) %>%
+  group_by(date) %>%
+  summarise(log_ridership = mean(log(ridership)))
+
+ggplot() +
+  geom_line(data = avg_ridership_treated, aes(x = date, y = log_ridership, color = "Real Treated")) +
+  geom_line(data = avg_ridership_placebo, aes(x = date, y = log_ridership, color = "Placebo Treated")) +
+  labs(title = "Average Ridership Over Time",
+       x = "Date",
+       y = "Average Ridership",
+       color = "Treatment Status") +
+  theme_minimal()
+ggsave("images/avg_ridership_over_time_placebo.png")
