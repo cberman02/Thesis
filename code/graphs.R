@@ -6,19 +6,18 @@ transit_data$date <- as.Date(transit_data$date)
 pre_covid$date <- as.Date(pre_covid$date)
 with_covid$date <- as.Date(with_covid$date)
 
-
-
+#Avg rides per month
 avg_rides <-transit_data %>%
   group_by(agency) %>%
   summarise(ridership = mean(ridership))
 
-#Avg rides per month
 avg_rides_plot <- ggplot(avg_rides,aes(x = ridership)) +
   geom_histogram(binwidth = 200000, fill = "skyblue", color = "black", alpha = 0.8) +
   labs(title = "Average Ridership per Month",
        x = "Average Ridership") +
   theme_minimal() +
   scale_x_continuous(labels = function(x) format(x, scientific = FALSE))
+
 #Removing NYC
 avg_rides <- avg_rides %>%
   filter(agency != "MTA New York City Transit")
@@ -68,23 +67,23 @@ ggplot(graph_df, aes(x = date, y = coef)) +
   geom_point() +
   geom_errorbar(aes(ymin = coef-ci, ymax = coef+ci), width = 0.2) +
   geom_vline(xintercept = as.Date("2019-12-01"), linetype = "dashed", color = "red") +
-  geom_hline(yintercept = 0, linetype = "dashed", color = "blue") +
+  geom_hline(yintercept = 0, linetype = "solid", color = "blue") +
   scale_x_date(date_breaks = "1 year", date_labels = "%Y") +  # Abbreviate x-axis labels to display only the year
   labs(x = "Year", y = "Coefficient", title = "Coefficient Plot")
 ggsave("images/coeff_plot.png")
 
-#Plot
-ggplot(t_test_df, aes(x = factor(year))) +
-  geom_point(aes(y = diff), color = "blue") +
-  geom_errorbar(aes(ymin = lower_ci, ymax = upper_ci), width = 0.2) +
-  geom_hline(yintercept = 0, linetype = "dashed", color = "red") +  # Add a line at y = 0
-  geom_vline(xintercept = 2019, linetype = "dashed", color = "green") +
-  labs(title = "Difference between Treated and Control Ridership",
-       x = "Year",
-       y = "Difference") +
-  theme_minimal() +
+#Limiting to 3 months before and 3 months after
+ggplot(graph_df, aes(x = date, y = coef)) +
+  geom_point() +
+  geom_errorbar(aes(ymin = coef-ci, ymax = coef+ci), width = 0.2) +
+  xlim(as.Date("2019-01-01"), as.Date("2020-03-01")) +
+  geom_vline(xintercept = as.Date("2019-12-01"), linetype = "dashed", color = "red") +
+  geom_hline(yintercept = 0, linetype = "solid", color = "blue") +
+  #scale_x_date(date_breaks = "1 year", date_labels = "%Y") +  # Abbreviate x-axis labels to display only the year
+  labs(x = "Year", y = "Coefficient", title = "Coefficient Plot") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
-ggsave("images/coeff_plot.png")
+ggsave("images/coeff_plot_1year.png")
+
 
 
 #Ridership month by month
@@ -165,6 +164,7 @@ avg_ridership_placebo <- placebo %>%
 ggplot() +
   geom_line(data = avg_ridership_treated, aes(x = date, y = log_ridership, color = "Real Treated")) +
   geom_line(data = avg_ridership_placebo, aes(x = date, y = log_ridership, color = "Placebo Treated")) +
+  #geom_vline(xintercept = as.numeric(as.Date("2019-12-01")), linetype = "dashed", color = "red") +
   labs(title = "Average Ridership Over Time",
        x = "Date",
        y = "Average Ridership",

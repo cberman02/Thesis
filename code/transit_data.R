@@ -51,9 +51,14 @@ transit_data <- transit_data %>%
 #Adding in total UZA ridership
 uza_ridership <- transit_data %>%
   group_by(uza_name, date) %>%
-  summarise(total_ridership = sum(ridership))
+  summarise(uza_ridership = sum(ridership))
+
+state_ridership <- transit_data %>%
+  group_by(state, date) %>%
+  summarise(state_ridership = sum(ridership))
 
 transit_data <- merge(transit_data, uza_ridership, by = c("uza_name", "date"))
+transit_data <- merge(transit_data, state_ridership, by = c("state", "date"))
 
 write.csv(transit_data, "data/transit_data.csv", row.names = FALSE) #Saving full data
 

@@ -7,10 +7,21 @@ reg_pre_covid <- transit_census_rankings
 reg_covid <- transit_census_rankings %>%
   filter(year != 2020) 
 
-# reg_pre_covid_controls <- transit_census_rankings %>%
-#   filter(date <= "2020-03-01")
-# reg_covid_controls <- transit_census_rankings %>%
-#   filter(year != 2020)
+#Trying just transit data to see why things changed
+reg_pre_covid_transit <- transit_data
+reg_pre_covid_transit$treated <- ifelse(reg_pre_covid_transit$agency %in%
+                                  c("Pinellas Suncoast Transit Authority",
+                                    "Livermore / Amador Valley Transit Authority",
+                                    "Research Triangle Regional Public Transportation Authority"), 1, 0)
+reg_pre_covid_transit <- reg_pre_covid_transit %>%
+  filter(date <= "2020-03-01") #Restricted to before COVID
+reg_pre_covid_transit$time <- ifelse(reg_pre_covid_transit$date > "2019-12-01", 1, 0)
+write_csv(reg_pre_covid_transit, "data/pre_covid_transit.csv")
+
+did_fe_date <- feols(ridership ~ treated:time | agency + date, data = reg_pre_covid_transit)
+did_ln_date <- feols(log(ridership) ~ treated:time | agency + date, data = reg_pre_covid_transit)
+etable(did_fe_date, did_ln_date, tex = T)
+
 
 
 #For simple regression (all below agencies are 2020 DiD)
