@@ -1,7 +1,10 @@
 pre_covid <- read_csv("data/pre_covid_transit.csv")
 placebo_agencies <- c("Hillsborough Area Regional Transit Authority",
-                      "The Eastern Contra Costa Transit Authority",
-                      "City of Durham")
+                      "City of Durham",
+                      "The Eastern Contra Costa Transit Authority"
+                      )
+#,"San Joaquin Regional Transit District"
+
 pre_covid$placebo <- ifelse(pre_covid$agency == placebo_agencies,1, 0)
 
 pre_covid_abbr <- pre_covid %>%
@@ -12,7 +15,13 @@ did_placebo <- feols(log(ridership) ~ placebo:time | agency + date, data = pre_c
 
 pre_covid_abbr$treated <- ifelse(pre_covid_abbr$agency == placebo_agencies,1, pre_covid_abbr$treated) #Adding in fake treated
 
-ddd <- feols(log(ridership) ~ treated:time:placebo | agency + date, data = pre_covid_abbr) #(3)
+ddd <- feols(log(ridership) ~ treated*time*placebo | agency + date, data = pre_covid_abbr) #(3) Maybe switch to : : instead of * *
+did_treated_2 <- feols(log(ridership) ~ treated:time | agency + date, data = pre_covid_abbr)
+etable(did_treated, did_treated_2, did_placebo, ddd) 
+ddd_lm <- lm(log(ridership) ~ treated*time*placebo, data = pre_covid_abbr)
+#did_placebo and ddd have same values. That's not right so look into coding issues
+#Write table out and do ddd manually to make sure everything is ok 
+
 
 #Trying different fixed effects
 ddd_fe_1 <- feols(log(ridership) ~ treated:time:placebo | agency^date, data = pre_covid_abbr) #No statistical significance, R^2 of 1

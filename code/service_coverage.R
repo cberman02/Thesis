@@ -1,20 +1,21 @@
 pinellas_pre <- read_csv(paste0("stop level/pinellas/", 'October 2019 Booking Ridership.csv')) %>%
-  na.omit()
+  na.omit() %>%
+  clean_names() %>%
+  rename(off_2019)
+
 pinellas_post <- read_excel(paste0("stop level/pinellas/", 'final Feb 2020 Booking data.xlsx')) %>%
-  clean_names()
+  clean_names() %>%
+  select(stop_id, stop_name, average_of_off, average_of_on,average_of_final,lat,long,rank) %>%
+  rename(off_2020 = average_of_off, on_2020 = average_of_on, final_2020 = average_of_final, rank_2020 = rank)
+
+pinellas_stops <- merge(pinellas_pre, pinellas_post, by = c("stop_id","stop_name", "lat", "long"))
 
 #Creating plots
 fl <- counties("Florida", cb = TRUE)
 pinellas <- fl %>%
   filter(NAMELSAD == "Pinellas County")
-hillsborough <- fl %>%
-  filter(NAMELSAD == "Hillsborough County")
 
 
-total_ridership <- sum(pinellas_pre$Final)
-pinellas_pre$perc <- sqrt((pinellas_pre$Final / total_ridership) * 100)
-total_ridership_post <- sum(pinellas_post$average_of_final)
-pinellas_post$perc <- sqrt((pinellas_post$average_of_final / total_ridership_post) * 100)
 
 # Plot
 ggplot() +
