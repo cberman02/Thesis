@@ -49,13 +49,19 @@
     \textbf{Acknowledgements}\\
     \linespread{1.5}
     \normalsize  
+    % KGC: I'm touched. I enjoyed working with you through this process. You've got great intuition for econometrics. 
      A massive thank you to my advisor, Kyle Coombs, for his unceasing advice and encouragement throughout this entire project, as well as his constant reminders that 12 weeks is not a lot of time to conduct research (I see that now). Equally massive is my thanks and gratitude to my parents for their love and support, as well as my dad's well meaning advice and edits. Another thank you must be extended to my wonderful roommates, Aidan Mcgaugh, Andrew Frey, and Isaac Levinger, whose own thesis struggles brought me great solace. And finally, a heartfelt thank you to my girlfriend, Livia, for always being there when I'd reached my wits end.  
 \end{center}
 \tableofcontents
 \newpage
 
+% KGC: My overall feedback is that things are mostly good, but as always things can be improved. You do a great job guiding the reader through key results. Great job with that and pointing out where the data just don't give the best results -- we've all been there. 
+
 \addcontentsline{toc}{section}{Introduction}
 \section*{Introduction}
+
+% The intro does a great job of getting to the point and introducing key results. Great job on that. The writing is good, but obviously always has room for tightening up. For example, your first sentence could say "In 1958, Congress passed the Transportation Act laying the groundwork for the modern Federal Transit System." Also it is a little unclear if Federal Transit System is an entity that the bill created or just a general description for transit in the USA. 
+
 In 1958, the Transportation Act of 1958 was passed in order to strengthen the national transit system. This passage represented the most important development towards the Federal Transit system used today \parencite{ftaweb}. Over half a century later, the transit system in the United States finds itself in need of strengthening once again, despite the advantages in sustainability, affordability, and safety public transportation enjoys over other modes of transit \parencite{atpafact}. Since 2012, bus ridership and rail ridership have fallen 15\% and 3\%, respectively (\cite{erhardt22}). The COVID-19 pandemic has not helped matters, with ridership cratering during the lockdowns and having yet to recover. \\
 \indent In order to address this, some transit agencies have contracted rideshare companies (otherwise known as transit network companies or TNCs)\footnote{The names rideshare company and TNCs are used interchangeably throughout the paper.}, like Uber and Lyft, to help them boost ridership. By offering discounted rides within an urbanized area (UZA), transit agencies hope to boost ridership by increasing accessibility. While there are studies that evaluate the effect of TNC emergence in an area on transit ridership, there is little literature on what the impact of this sort of partnership is.\\
 \indent This paper is the first to empirically examine the efficacy of increasing public transit ridership through a partnership with
@@ -75,6 +81,9 @@ There are several types of partnerships that transit agencies can engage in, but
 
 \addcontentsline{toc}{section}{Data}
 \section*{Data}
+
+% The data section has some tables that you don't explicitly mention in the text, but you do reference some of what they show. Line that up for the reader. Also, note that you can use \input{table1.tex} to input table1 into a .tex document if you save it to a .tex file. Not critical to do, but it can help keep you organized. 
+
 Most of the data used comes from the National Transit Database (NTD), which  is maintained by the Federal Transit Authority and reports on a monthly basis for several transit related variables. These include Vehicle Revenue Miles (VRM), Vehicle Revenue Hours (VRH), Passenger Miles Traveled (PMT), Unlinked Passenger Trips (UPT), and Operating Expenses (OE) for every transit agency that receives federal funding. UPT is a metric of how many people board an individual vehicle, and is used in this paper to determine transit performance. While there are other variables that indicate improved transit performance (e.g. less delays, increased service hours, cleaner conditions, etc.), ridership is the only performance variable that will be directly effected by a TNC partnership and is used as an outcome variable. I use VRH, which is a measure of how many hours transit vehicles are accepting customers, in my analysis as a placebo outcome in order to help establish parallel trends. \\
 \indent While the data exists from 2002-Present, it is subsetted to 2014-2019 as that is when UberX had become widespread, entering 65 cities. UberX was a service that lowered the price of calling a ride and is far more similar to the ride-hailing services used today\footnote{While I include all TNC partnerships in my analysis, Uber has such a massive market share that several of my decisions are driven by their actions.}. The data after 2019 is removed in order to avoid contamination of the result due to COVID-19. Treatment is determined using the list provided by the Chaddick Institute \parencite{depaul} and is coded in manually.
 \begin{table}[H] \centering \renewcommand*{\arraystretch}{1.1}\caption{Summary statistics for NTD data}\resizebox{\textwidth}{!}{
@@ -153,7 +162,12 @@ I find the effect of TNC partnership on ridership per capita using a two-way fix
 
 \addcontentsline{toc}{subsection}{TNC-Transit Partnership Effect on Vehicle Revenue Hours}
 \subsection*{TNC-Transit Partnership Effect on Vehicle Revenue Hours}
+%I'd consider switching this section to robustness and the section on treatment vs. control with density plots to this spot or the data description. 
+
 In order to establish parallel trends, I use the placebo outcome of VRH. VRH should remain unaffected, as these partnerships do not increase the frequency of trips, or the number of hours transit is used. Using the regression specification above on the outcome variable of VRH, I find that while the effect is nonzero, it is entirely inconsistent. This suggests that while shocks might occur to impact VRH, changes in this variable are not correlated with the consistent ridership increases seen via these partnerships.
+
+%KGC: This last sentence should have an indicator after "This" like "This inconsistency suggests..."
+
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.6\textwidth]{coef_plot_placebo.pdf} % Adjust width as needed
@@ -164,6 +178,9 @@ In order to establish parallel trends, I use the placebo outcome of VRH. VRH sho
 \addcontentsline{toc}{section}{Results}
 \section*{Results}
 The results of this regression shown in Table 4 illustrate the effect of population on ridership per capita is statistically insignificant, suggesting that as population increases, ridership per capita remains fixed. This means ridership expands as population does, as ridership per capita would remain unchanged under this condition. Median household income is shown to negatively effect ridership per capita, with a higher household income lowering the outcome variable. The ATT is observed to yield a statistically significant increase to ridership per capita, at around 4.7\%. In examining the event study plot in Figure 3, there are significant results prior to the treatment, suggesting the presence of exogenous shocks to ridership that are not accounted for by this model. The point estimates after the treatment are largely positive and significant, however, which indicates that there is a possible increase in the outcome variable.\\
+
+%KGC: It is not necessarily exogenous shocks here -- just a differential, but noisy pretrend from the control group. 
+
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.3\textwidth]{coef_plot_reg.pdf} % Adjust width as needed
@@ -229,6 +246,8 @@ The results of this regression shown in Table 4 illustrate the effect of populat
     \includegraphics[width=0.5\textwidth]{catt_plot.pdf} % Adjust width as needed
     \caption{Cohort average effects of TNC-transit partnership}
 \end{figure}
+
+% This works here as a robustness check, but you could also stick it just before/after main results. 
 
 \indent To get a sense of how representative the treated agencies are of transit agencies nationwide, I plot the distribution of population, ridership, percentage white, median age, and median household income of both the treated and the control groups. Figure 5 illustrates that the distribution of the treated group is similar to the broader control group in almost all categories, with the peak of the distribution at a similar point. The treated agencies tend to be slightly wealthier, and serve slightly larger populations, but otherwise, there is good reason to believe that the results of this treatment could be applicable to other agencies.
 \begin{figure}[H]
