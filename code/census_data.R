@@ -10,7 +10,6 @@ survey <- "acs1"
 # Variables of interest for Urbanized Areas
 vars <- c(
   "B01003_001",  # Total population
-  "B24114_001", #Civilian employed population (16+), proxy for number of jobs
   "B19013_001",   # Median household income
   "B17005_002", # Poverty Status
   "B23006_023", # Bachelors Degree or higher
@@ -23,7 +22,8 @@ vars <- c(
 )
 
 # Years from 2005 to present
-years <- 2005:2019
+years <- 2006:2022
+years <- years[years != 2020] #2020 data is missing
 
 # Initialize an empty data frame to store results
 all_uza <- data.frame()
@@ -51,7 +51,7 @@ all_uza <- all_uza %>%
     values_from = "estimate"
   )
 
-colnames(all_uza) <- c("geoid","uza_name","year","med_age", "pop","white","black","asian","hispanic","poverty","med_house_income","bach")
+colnames(all_uza) <- c("geoid","uza_name","year","med_age", "pop","white","black","asian","hispanic","poverty","med_house_income","bach","num_vehic_commute")
 
 #Converting below vars to proportions
 all_uza$white <- all_uza$white / all_uza$pop
@@ -60,16 +60,4 @@ all_uza$asian <- all_uza$asian / all_uza$pop
 all_uza$hispanic <- all_uza$hispanic / all_uza$pop
 all_uza$poverty <- all_uza$poverty / all_uza$pop
 
-#Cleaning UZA names for easier merge
-census_data$uza_name <- sub("([A-Z]{2}).*", "\\1", census_data$uza_name) # Limiting census uza names
-census_data$uza_name <- gsub("--\\w+\\b", "", census_data$uza_name)
-census_data$uza_name <- trimws(gsub("(?i)urban", "", census_data$uza_name)) #removing urban
-census_data$uza_name <- ifelse(census_data$uza_name == "Los Angeles Beach Ana, CA" | 
-                                 census_data$uza_name == "Los Angeles Beach, CA", 
-                               "Los Angeles, CA", census_data$uza_name)
-census_data$uza_name <- ifelse(census_data$uza_name == "New York, NY", 
-                               "New York City, NY", census_data$uza_name) #changing New York to NYC
-census_data$uza_name <- ifelse(census_data$uza_name == "Salt Lake City Valley City, UT", 
-                               "Salt Lake City, UT", census_data$uza_name) #Changing to salt lake city
-
-write_csv(all_uza, "data/all_uza.csv")
+write_csv(all_uza, "data/clean/all_uza.csv")

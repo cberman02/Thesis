@@ -1,0 +1,110 @@
+---
+title: "Methods and Data"
+author: "Charlie Berman"
+date: "`r Sys.Date()`"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+source("../code/housekeeping.r")
+transit_data <- read.csv("../data/transit_data.csv") %>%
+   separate(col = uza_name, into = c("city", "state"), sep = ", ", remove = FALSE)
+```
+
+## Methods
+
+$$Y_{i,t} = \beta_0 + \beta_1 D_{i,t} + \gamma_i + \delta_t + \epsilon$$
+Where: 
+
+- $Y_{it}$: ridership for transit agency $i$ in month $t$
+- $D_{it}$: 1 if transit agency $i$ is partnered with Uber in month $t$, 0 otherwise 
+- $\gamma_i$: fixed effects for state that transit agency $i$ is in 
+- $\delta_t$: fixed effects for month $t$
+- Possible demographic, transit quality controls, etc.
+
+## Data
+
+Monthly ridership data for transit agencies in the United States
+
+  - NTD data from 2005-2023 (will play with date range)
+  
+Yearly ACS Survey data for demographic controls
+
+  - 2005-2023 (barring 2020)
+  
+AllTransit rankings for transit quality controls
+
+  - 2013
+  - Considers service area, routes, trips, etc
+  
+Stop level ridership data
+
+  - Still in the works
+
+## Preliminary Results I: Pre-COVID
+
+* Pinellas Suncoast Transit Authority, Livermore / Amador Valley Transit Authority, and Research Triangle Regional Public Transportation Authority
+```{r, echo=FALSE, message=FALSE, warning=FALSE,out.width="10%",out.height="10%"}
+options(width = "10")
+reg_pre_covid <- transit_data
+
+reg_pre_covid$treated <- ifelse(reg_pre_covid$agency %in%
+                                   c("Pinellas Suncoast Transit Authority",
+                                   "Livermore / Amador Valley Transit Authority",
+                                   "Research Triangle Regional Public Transportation Authority"), 1, 0)
+reg_pre_covid <- reg_pre_covid %>%
+ filter(date < "2020-03-01" & date >= "2016-01-01" & ridership > 0) #Restricted to before COVID
+reg_pre_covid$time <- ifelse(reg_pre_covid$date > "2019-12-01", 1, 0)
+ 
+ # DiD regression with fixed effects using feols
+did_base <- feols(ridership ~ treated:time, data = reg_pre_covid, vcov = agency)
+did_fe <- feols(ridership ~ treated:time | month + state, data = reg_pre_covid)
+did_ln <- feols(log(ridership) ~ treated:time | month + state, data = reg_pre_covid)
+
+out <- etable(
+  did_base, did_fe, did_ln, 
+  coefstat = "tstat", digits = 3, digits.stats = 3
+)
+
+```
+
+```{r, results='asis'}
+kable(out, "html",table.attr = "style='width:10%;'") %>%
+  kable_styling(full_width = FALSE, font_size = 14)
+```
+
+
+## Preliminary Results II: COVID
+
+* Addition of Dallas Area Rapid Transit and Bi-State Development Agency of the Missouri-Illinois Metropolitan District
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+#For simple regression (all below agencies are 2020 DiD)
+reg_covid <- transit_data
+reg_covid$treated <- ifelse(reg_covid$agency %in% 
+                                  c("Dallas Area Rapid Transit", 
+                                  "Bi-State Development Agency of the Missouri-Illinois Metropolitan District",
+                                  "Pinellas Suncoast Transit Authority",
+                                  "Livermore / Amador Valley Transit Authority",
+                                  "Research Triangle Regional Public Transportation Authority"), 1, 0) 
+#Livermore and RTP 12/2019, PSTA 11/2019, just treating as 2020
+reg_covid <- reg_covid %>%
+  filter(year != 2020)
+
+reg_covid$time <- ifelse(reg_covid$year > 2020, 1, 0)
+
+did_base <- feols(ridership ~ treated:time, data = reg_covid)
+did_fe <- feols(ridership ~ treated:time | month + state, data = reg_covid)
+did_ln <- feols(log(ridership) ~ treated:time | month + state, data = reg_covid)
+
+out <- etable(
+  did_base, did_fe, did_ln, 
+  coefstat = "tstat", digits = 3, digits.stats = 3
+)
+```
+
+```{r, results='asis'}
+kable(out, "html",table.attr = "style='width:10%;'") %>%
+  kable_styling(full_width = FALSE, font_size = 14)
+```

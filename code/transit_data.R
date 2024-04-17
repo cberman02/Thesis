@@ -34,8 +34,9 @@ transit_data$year <- transit_data$date %>%
 transit_data$date <- as.Date(paste(transit_data$month, transit_data$year, "01", sep = "_"), format = "%b_%Y_%d") 
 
 transit_data <- transit_data %>%
-  filter(year >= 2005 & year < 2020) #Restricting to 2005-2019
-
+  filter(status == "Active") #Restricted to 2016 and on
+transit_data$ridership[transit_data$ridership == 0] <- 1 #Making 0 to 1 for ln calculation
+  
 #Cleaning UZA names for easier merging
 transit_data$uza_name <- gsub("--\\w+\\b", "", transit_data$uza_name) #removing -- weirdness
 transit_data$uza_name <- gsub("City City", "City", transit_data$uza_name) #removing duplicate "city"
@@ -44,7 +45,24 @@ transit_data$uza_name <- ifelse(transit_data$uza_name == "Los Angeles Beach Ana,
                                   transit_data$uza_name == "Los Angeles Beach, CA", 
                                 "Los Angeles, CA", transit_data$uza_name) #using LA as proxy for LA Beach
 
+transit_data <- transit_data %>%
+  separate(col = uza_name, into = c("city", "state"), sep = ", ", remove = FALSE)
 
-#819 unique agencies, over 15 years with ridership recorded monthly. 413,000 total observations
+#Adding in total UZA ridership
+uza_ridership <- transit_data %>%
+  group_by(uza_name, date) %>%
+  summarise(uza_ridership = sum(ridership))
+
+state_ridership <- transit_data %>%
+  group_by(state, date) %>%
+  summarise(state_ridership = sum(ridership))
+
+transit_data <- merge(transit_data, uza_ridership, by = c("uza_name", "date"))
+transit_data <- merge(transit_data, state_ridership, by = c("state", "date"))
+
 write.csv(transit_data, "data/transit_data.csv", row.names = FALSE) #Saving full data
+
+
+
+
 
