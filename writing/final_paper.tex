@@ -1,0 +1,298 @@
+\documentclass [12pt]{report}
+\linespread{2}
+\usepackage{booktabs}
+\usepackage{geometry}[margin=1in]
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{dcolumn}
+\usepackage{float}
+\usepackage{tabularx}
+\usepackage{adjustbox}
+\usepackage{caption}
+\usepackage[style = authoryear,sorting=nty,maxbibnames=99]{biblatex}
+\addbibresource{references.bib}
+\restylefloat{table}
+
+\begin{document}
+\begin{titlepage}
+    \begin{center}
+        \vspace*{1cm}
+            
+        \Huge
+        \textbf{Assessing the Impact of Public Transit-Rideshare Partnerships}
+        
+            
+            
+        \vspace{1cm}
+        \large
+        Charlie Berman\\
+        Advised by Professor Kyle Coombs
+        \vspace{0.5cm}
+
+                                
+        \includegraphics[width=0.4\textwidth]{bates_seal.pdf}
+
+        \vspace{0.6cm}
+        \normalsize
+        A thesis presented to the Bates Economics Department\\
+        in partial fulfillment of the requirements for the\\
+        Degree of Bachelor of Arts
+
+        
+
+        
+    \end{center}
+\end{titlepage}
+
+\begin{center}
+    \Large
+    \textbf{Acknowledgements}\\
+    \linespread{1.5}
+    \normalsize  
+     A massive thank you to my advisor, Kyle Coombs, for his unceasing advice and encouragement throughout this entire project, as well as his constant reminders that 12 weeks is not a lot of time to conduct research (I see that now). Equally massive is my thanks and gratitude to my parents for their love and support, as well as my dad's well meaning advice and edits. Another thank you must be extended to my wonderful roommates, Aidan Mcgaugh, Andrew Frey, and Isaac Levinger, whose own thesis struggles brought me great solace. And finally, a heartfelt thank you to my girlfriend, Livia, for always being there when I'd reached my wits end.  
+\end{center}
+\tableofcontents
+\newpage
+
+\addcontentsline{toc}{section}{Introduction}
+\section*{Introduction}
+In 1958, Congress passed a transportation act in order to strengthen the national transit system. This act represented the most important development towards the transit system used today \parencite{ftaweb}. Over half a century later, the transit system in the United States finds itself in need of strengthening once again, despite the advantages in sustainability, affordability, and safety public transportation enjoys over other modes of transit \parencite{atpafact}. Since 2012, bus ridership and rail ridership have fallen 15\% and 3\%, respectively (\cite{erhardt22}). The COVID-19 pandemic has not helped matters, with ridership cratering during the lockdowns and having yet to recover. \\
+\indent In order to address this, some transit agencies have contracted rideshare companies (otherwise known as transit network companies or TNCs)\footnote{The names rideshare company and TNCs are used interchangeably throughout the paper.}, like Uber and Lyft, to help them boost ridership. By offering discounted rides within an urbanized area (UZA), transit agencies hope to boost ridership by increasing accessibility. While there are studies that evaluate the effect of TNC emergence in an area on transit ridership, there is little literature on what the impact of this sort of partnership is.\\
+\indent This paper is the first to empirically examine the efficacy of increasing public transit ridership through a partnership with
+TNCs. I use a two-way fixed effect model on ridership data from the National Transit Database and demographic data from the American Community Survey from 2014 to 2019. By examining monthly ridership numbers from different transit agencies, I account for what the average treatment effect the partnership has in general, as well as for each agency that contracted a TNC. I find that ridership per capita increases anywhere from 4\% to 11\%, depending on the agency, and an average treatment effect of 4.7\% as a result of partnership.
+
+\addcontentsline{toc}{subsection}{Transit Network Companies and Public Transit}
+\subsection*{Transit Network Companies and Public Transit}
+On its face, the decision for agencies to partner with TNCs is a curious one. Intuition would suggest that TNCs could act as a substitute to public transportation, and research reinforces this, finding that ride-hailing is the single biggest driver of ridership decline \parencite{erhardt22}. News outlets have also reported on the threat of TNC competition to public transportation, claiming "cities would grind to a halt" if these companies captured a large enough market share \parencite{mcfarlandcnn}.\\
+\indent There are alternative perspectives, however. TNCs can offer easier access to rail and bus stops and have been shown to serve as a compliment, increasing ridership on average, especially in large cities or areas with smaller transit agencies \parencite{Hall2018}. The heterogeneity of effect uncovered in Hall, et al. is consistent across other literature. Using monocentric city model, Zhao finds that the effect on ridership is dependent on the quality of the transit agency, with high quality transit systems seeing a boost, while low quality systems find their ridership poached by TNCs \parencite{zhao19}. Extending the monocentric city model to account to account for multiple transportation modes suggests that whether rideshare companies are a substitute or compliment is dependent on policy choices and subsidizing them in order to provide last-mile service increases ridership more than regulation or taxation \parencite{agrawal23}.\\
+
+\addcontentsline{toc}{subsection}{Types of Partnerships}
+\subsection*{Types of Partnerships}
+There are several types of partnerships that transit agencies can engage in, but they can broadly be divided into a few different categories, drawn from Schwieterman, et al. in their review on public transit partnerships \parencite{depaul}. Generally speaking, there are subsidized rides, app integration, and paratransit support/other specialty programs. \\
+\indent This paper focuses on the first type of program: direct subsidies. In this partnership, the goal is to incentives public transit ridership via financial incentives. These programs occur as discounts for any rides that take place within a UZA's borders, discounts for rides specifically to transit stops, or discounts for specific trips during off-peak hours. Programs like St. Petersburg's Direct Connect fall into this category. This program discounts rides that are taken to one of twenty-six designated locations within the city.\\
+\indent Agencies have also contracted TNCs to integrate their apps with the agency's app. This sort of partnership allows users to hail a ride directly from the same app that they manage their transit tickets from. Programs that allow users to see transit schedules and manage trips from a TNC app also fall under this category. An example of this program is Dallas's GoPass app, which allows riders to hail an Uber from in app. This represents a cheap way of promoting transit services alongside TNCs.\\
+\indent The specialty programs tend to be less popular. While these can be similar to subsidized programs, they generally only apply to transit users that qualify for existing paratransit services. These riders can qualify for discounted trips using specific Uber/Lyft cars that can accommodate people with disabilities. While this is an important service, the scope is narrow enough that this partnership is not considered in the analysis.
+
+\addcontentsline{toc}{section}{Data}
+\section*{Data}
+Most of the data used comes from the National Transit Database (NTD), which  is maintained by the Federal Transit Authority and reports on several transit related variables, including Vehicle Revenue Miles (VRM), Vehicle Revenue Hours (VRH), Unlinked Passenger Trips (UPT), and information on fares for every transit agency that receives federal funding. The data is recorded on the agency level for every month. The summary statistics on the variables used in my analysis can be found in Table 1. The outcome variable used is UPT, which is a metric of how many people board an individual vehicle, and I use this to proxy for increased transit performance. While there are other variables that indicate improved transit performance (e.g. less delays, increased service hours, cleaner conditions, etc.), ridership is the only performance variable that will be directly effected by a TNC partnership and is used as an outcome variable. I use VRH, which is a measure of how many hours transit vehicles are accepting customers, in my analysis as a placebo outcome in order to help establish parallel trends. \\
+\indent While the data exists from 2002-Present, it is subsetted to 2014-2019 as that is when UberX had become widespread, entering 65 cities. UberX was a service that lowered the price of calling a ride and is far more similar to the ride-hailing services used today\footnote{While I include all TNC partnerships in my analysis, Uber has such a massive market share that several of my decisions are driven by their actions.}. The data after 2019 is removed in order to avoid contamination of the result due to COVID-19. \\
+\begin{table}[H] 
+\tiny
+\centering \renewcommand*{\arraystretch}
+{1.1}\caption{Summary statistics for NTD data}\resizebox{\textwidth}{!}{
+\begin{tabular}{lrrrrrrr}
+\hline
+\hline
+Variable & N & Mean & Std. Dev. & Min & Pctl. 25 & Pctl. 75 & Max \\ 
+\hline
+Ridership & 35208 & 1676969 & 13576543 & 1 & 40455 & 473923 & 322725962 \\ 
+Ridership per capita & 35208 & 0.74 & 1.3 & 0.000000052 & 0.032 & 0.91 & 17 \\ 
+Vehicle Revenue Hours & 35208 & 45222 & 166603 & 0 & 4759 & 25452 & 3262509 \\ 
+Mode & 35208 &  &  &  &  &  &  \\ 
+... Bus & 30960 & 88\% &  &  &  &  &  \\ 
+... Rail & 1932 & 5\% &  &  &  &  & \\ 
+... Ferry & 1210 & 3\% &  &  &  &  &  \\ 
+... Other & 1106 & 3\% &  &  &  &  &  \\ 
+Agencies & 492\\
+... Treated & 9\\
+... Control & 483 \\
+UZAs & 262\\
+States & 49\\
+\hline
+\hline
+\end{tabular}
+}
+\end{table}
+\indent Treatment is determined using the list provided by the Chaddick Institute in their review of TNC-transit partnerships \parencite{depaul} and is coded in manually. The full list of treated agencies can be found in Table 2. \\
+
+\begin{table}[H]
+    \caption{List of treated agencies}
+    \centering
+    \resizebox{\textwidth}{!}{
+    \begin{tabular}{lcc}
+    \midrule
+    \midrule
+     Agency    &  UZA & Start Date \\
+     \midrule
+     Pinellas Suncoast Transit Authority & Tampa/Petersburg, FL & February 2016\\
+      Livermore Amador Valley Transit Authority & Livermore, CA
+& September 2016 \\
+Orange County Transportation Authority & Los Angeles, CA & October 2016\\
+Solano County Transit & Vallejo, CA & May 2017\\
+Greater Dayton Regional Transit Authority & Dayton, OH & June 2017\\
+City of Charlotte North Carolina & Charlotte, NC & April 2018 \\
+City of Detroit & Detroit, MI & May 2018\\
+Pierce County Transportation Benefit Area Authority & Seattle, WA & May 2018 \\
+Research Triangle Regional Public Transportation Authority &Durham, NC
+&December 2019\\
+
+    \end{tabular}
+}
+\end{table}
+
+Table 3 provides a brief examination of ridership per capita over the years and illustrates a clear decline of ridership over time, a finding consistent with previous literature \parencite{erhardt22}.
+\begin{table}[H] 
+\tiny
+\centering \renewcommand*{\arraystretch}{1.1}\caption{Ridership per capita by year}\resizebox{\textwidth}{!}{
+\begin{tabular}{lrrrrrrrr}
+\hline
+\hline
+Year & N & Mean & Std. Dev. & Min & Pctl. 25 & Median & Pctl. 75 & Max\\
+\hline
+2014 & 5832 & 0.7843 & 1.3700 & 0.0000 & 0.0272 & 0.3503 & 0.9719 & 17.1029\\
+2015 & 5856 & 0.7757 & 1.3783 & 0.0000 & 0.0313 & 0.3394 & 0.9452426 & 16.8476\\
+2016 & 5892 & 0.7484 & 1.3275 & 0.0000 & 0.03254 & 0.3290 & 0.9218 & 16.3226\\
+2017 & 5868 & 0.7181 & 1.2841 & 0.0000 & 0.03174 & 0.3100 & 0.8932 & 16.7465\\
+2018 & 5880 & 0.7134 & 1.2783 & 0.0000 & 0.03193 & 0.3080 & 0.8750 & 16.87828\\
+2019 & 5880 & 0.7077 & 1.2808 & 0.0000 & 0.0335 & 0.3091 & 0.8484145 & 17.0671\\
+\hline
+\hline
+\end{tabular}
+}
+\end{table}
+I also plot ridership per capita for both the treated and control agencies in Fig.1. Visual analysis indicate a similar trend with both groups decreasing until 2017. 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.3\textwidth]{average_ridership_per_capita.png} % Adjust width as needed
+    \caption{Ridership over Time}
+\end{figure}
+\indent Demographic variables are obtained from The American Community Survey (ACS). The ACS is maintained by the US Census Bureau and records annual demographic data on hundreds of different variables for different levels (e.g. state, county, urbanized area, etc). I use population, median age, racial composition, and median household income, all on the UZA level. Population and median household income are used in the regression, as a higher population correlates with higher ridership and families with lower median income are more likely to use public transit \parencite{wang}. The variables relating to race and age are used to illustrate the similarities between the treated agencies and the UZAs they serve to the broader control group. The data is subsetted to the same years as the NTD data, and merged by the UZA. The full set of summary statistics for the variables I use can be found in Table 4.\\
+\begin{table}[H] 
+\tiny
+\centering \renewcommand*{\arraystretch}{1.1}\caption{Summary statistics of ACS variables}\resizebox{\textwidth}{!}{
+\begin{tabular}{lrrrrrrr}
+\hline
+\hline
+Variable & N & Mean & Std. Dev. & Min & Pctl. 25 & Pctl. 75 & Max \\ 
+\hline
+Median Age & 35208 & 37 & 4.1 & 23 & 35 & 39 & 58 \\ 
+Population & 35208 & 3076829 & 5080259 & 62112 & 215650 & 3468694 & 19094455 \\ 
+Perc. White & 35040 & 0.7 & 0.13 & 0.17 & 0.58 & 0.8 & 0.97 \\ 
+Perc. Black & 35040 & 0.13 & 0.11 & 0.001 & 0.058 & 0.18 & 0.65 \\ 
+Perc. Asian & 35040 & 0.065 & 0.058 & 0.001 & 0.026 & 0.083 & 0.44 \\ 
+Perc. Hispanic & 35208 & 0.12 & 0.16 & 0 & 0 & 0.21 & 0.99 \\ 
+Median Household Income & 35208 & 294088 & 499848 & 1990 & 23852 & 279635 & 2008329\\ 
+\hline
+\hline
+\end{tabular}
+}
+\end{table}
+
+\indent I plot the distribution of population, ridership, percentage white, median age, and median household income of both the treated and the control groups. Fig.2 illustrates that the distribution of the treated group is similar to the broader control group in almost all categories, with the peak of the distribution at a similar point. The treated agencies tend to be slightly wealthier, and serve slightly larger populations, but otherwise, the treated group seems to be a reasonable sample of the broader population of transit agencies. The similar distributions lend credence to the results from this analysis, suggesting that they should be applicable across a wide range of agencies and UZAs.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{combined_demographic_plots.png} % Adjust width as needed
+    \caption{Distribution of demographic traits between treated and control}
+\end{figure}
+
+\addcontentsline{toc}{section}{Methods}
+\section*{Methods}
+I find the effect of TNC partnership on ridership per capita using a two-way fixed effects (TWFE) regression of the following form. $$Y_{it} = \beta X_{jt} + \alpha_i + \delta_t + \sum_{t}^T \mu_{\ell} D_{it} \times 1(t -\tau) + \epsilon_{it}$$ where $Y_{it}$ is the ridership per capita of agency $i$ at calendar time $t$; $X_{jt}$ is a vector of socioeconomic and demographic covariates of the UZA the agency is based in; $\alpha_i$ and $\delta_t$ are agency and calendar time fixed effects; $\mu_{\ell}$ is the effect of the treatment at relative time $\ell = t-\tau$, where $\tau$ is the time treatment was implemented; $D_{it}$ is 1 when the partnership is in effect and 0 when the partnership is not.\\
+\indent In order to provide more robust estimates of the treatment effect, I rely on Sun and Abraham's work on estimating dynamic treatment effects \parencite{sunab}. They create an interaction weighted (IW) estimator to consistently estimate the weighted average of the cohort average treated effect (CATT), where a cohort is units that were treated at the same time. This IW estimator also has the advantage of being robust to contamination from earlier and later treated groups, as well as treatment effect heterogeneity, whereas the base TWFE model is not. This is important because the different makeups of the UZAs and transit agencies mean that the agencies are likely to experience differing effects. I aggregate $\text{CATT}_{e,\ell}$ for all $\ell$ to find $\text{CATT}_{e}$, which describes the average treatment effect (ATT) of the cohort. I aggregate $\text{CATT}_{e}$ to find the ATT of all TNC-Transit partnerships as well, in order to determine the average effect across cohorts. All of this is done as described by Sun and Abraham (2021). \\
+\indent The main assumption is parallel trends between treated and control agencies. Given the distribution of demographic variables, shown in Fig.2, there are reasonable grounds for assuming similar trends pre and post treatment, as these areas are likely to experience similar pressures. I make the assumption for absorbing treatments as well. While several of the treated groups only have subsidized rides for shorter periods, the change in transportation habits that this treatment could cause has some likelihood of persisting even after the program has ended. I also assume no anticipation of treatment, as the population tends to be notified via press release on the day of launch \parencite{tampa}.  \\
+
+
+\addcontentsline{toc}{section}{Results}
+\section*{Results}
+The results of this regression shown in Table 5 illustrate the effect of population on ridership per capita is statistically insignificant, suggesting that as population increases, ridership per capita remains fixed. This means ridership expands as population does, as ridership per capita would remain unchanged under this condition. Median household income is shown to negatively effect ridership per capita, with a higher household income lowering the outcome variable. The ATT is observed to yield a statistically significant increase to ridership per capita, at around 4.7\%. In examining the event study plot in Fig.3, there are significant results prior to the treatment, which indicates a noisy pretrend. This is not entirely surprising given the volatility of monthly ridership values, as shown in Fig.4. The point estimates after the treatment are largely positive and significant, however, which indicates that there is a possible increase in the outcome variable.\\
+\indent The effect on the cohorts is mostly significant, with agencies seeing anywhere from a 3.8\% to an 11.2\% increase. This is a fairly wide spread around the ATT of 4.7\% and demonstrates that not all cohorts experience the same effect, supporting the assumption that there is treatment heterogeneity. Some agencies experience insignificant results, which I attribute to the noise around transit ridership numbers. The effects can be observed in Fig.5.
+
+\begin{figure}[H]
+\centering
+  \centering
+  \includegraphics[width=0.5\textwidth]{coef_plot_reg.pdf}
+  \captionof{figure}{Event study of treatment on ridership per capita}
+  \label{fig:test1}
+\end{figure}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.7\textwidth]{ridership_volatility_plot.pdf}
+  \captionof{figure}{Ridership per capita of treated group over time}
+  \label{fig:test2}
+\end{figure}
+
+\begin{table}[H]
+\centering 
+\tiny
+\caption{Effect of TNC-transit partnership on ridership per capita}
+\begin{tabular}{lc}
+   \tabularnewline \midrule
+   \midrule
+   & Ridership/Pop. \\   
+   \midrule
+   Population (in 100,000s) & 0.0010 \\
+   & (0.0045)\\
+   \midrule
+   Med. Household Income (in 10,000s) & -0.0028$^{***}$ \\
+   & (0.0008)\\
+   \midrule
+   Average Treatment Effect & 0.0471$^{***}$\\
+   & (0.0058)\\
+   \midrule
+   Pinellas Suncoast Transit Authority & -0.0142\\   
+   & (0.0123) \\   
+   \midrule
+   Livermore/Amador Valley Transit Authority & 0.0620$^{***}$ \\   
+   & (0.0139) \\   
+   \midrule
+   Orange County Transportation Authority & 0.0815$^{***}$ \\   
+   & (0.0191) \\   
+   \midrule
+   Solano County Transit & 0.1117$^{***}$ \\   
+   & (0.0124)\\   
+   \midrule
+   Greater Dayton Regional Transit Authority & -0.0066 \\   
+   & (0.0172)\\  
+   \midrule
+   City of Charlotte North Carolina & 0.0514$^{***}$ \\   
+   & (0.0079) \\   
+   \midrule
+   Pierce County Transportation Benefit Area Authority & 0.0585$^{***}$ \\   
+   City of Detroit & (0.0141) \\   
+   \midrule
+   Research Triangle Regional Public Transportation Authority & 0.0378$^{***}$\\   
+   & (0.0136) \\    
+   \midrule
+   \multicolumn{1}{l}{\emph{Fixed-effects}} & \\
+   agency & Yes \\  
+   date & Yes \\   
+   \midrule
+   Observations              & 24,990\\  
+   R$^2$                     & 0.9270\\  
+   Within R$^2$              & 0.0014\\  
+   \midrule \midrule
+   \multicolumn{1}{l}{\emph{Clustered (agency) standard-errors in parentheses}}\\
+   \multicolumn{1}{l}{\emph{Signif. Codes: ***: 0.01, **: 0.05, *: 0.1}}\\
+\end{tabular}
+\end{table}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{catt_plot.pdf} % Adjust width as needed
+    \caption{Cohort average effects of TNC-transit partnership}
+\end{figure}
+
+
+\addcontentsline{toc}{subsection}{TNC-Transit Partnership Effect on Vehicle Revenue Hours}
+\subsection*{TNC-Transit Partnership Effect on Vehicle Revenue Hours}
+In order to check the robustness of my methodology, I use the placebo outcome of VRH. VRH should remain unaffected, as these partnerships do not increase the frequency of trips, or the number of hours transit is used. Using the regression specification above on the outcome variable of VRH, I find that while the effect is nonzero, it is entirely inconsistent. This inconsistency suggests that while shocks might occur to impact VRH, changes in this variable are not correlated with the consistent ridership increases seen via these partnerships.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{coef_plot_placebo.pdf} % Adjust width as needed
+    \caption{Treatment effect on VRH pre and post treatment}
+\end{figure}
+
+\addcontentsline{toc}{section}{Conclusion}
+\section*{Conclusion}
+The introduction of transit agency subsidized TNC rides represents a possible policy option when governments and agencies are considering ways to increase accessibility. Increases of 4\%-10\% in ridership suggest that more riders are able to access transit stops, without the need to build new stops or employ more workers. Prior to the COVID-19 Pandemic, it was predicted that more agencies would roll out partnerships \parencite{depaul}, and indeed, going into 2020, several more agencies had announced collaborations with Uber and Lyft \parencite{atpapartner}. \\
+\indent However, the changing landscape of transit and TNCs post-COVID make recommending this policy approach more difficult. Conversations with an Uber project manager suggest that these partnerships have shifted from some agencies reaching out to Uber and vice-versa, to being driven by Uber in areas with low market share. This could change the nature of the treatment and render the results unreliable. Prices of TNCs have also risen dramatically. When Uber was slashing prices , with fares as low as \$11 in 2015 \parencite{vox}, offering a \$5 voucher made sense. But prices are on the rise, with fares seeing an increase of 83\% between 2019 and 2022 \parencite{sherman}. These factors, in addition to the increasing number of controversies that Uber has found themselves have embroiled in \parencite{guardian} make partnering with any TNC a less attractive proposition to government transit agencies.
+
+\addcontentsline{toc}{subsection}{Further Research}
+\subsection*{Further Research}
+Rerunning this design on data from post-COVID to the present on the most recently formed partnerships could give empirical evidence as to the effectiveness of this program currently. Ridership data from the bus/rail stop level could reduce noise and the number of assumptions needing to be made. For example, stops from two neighboring counties, one with a partnership and one without, could be compared as a case study. A more carefully considered control group could also reduce the noise in the dataset, yielding cleaner results. The literature around staggered difference-in-difference designs is also still in flux, so a different specification might help to eliminate bias.
+
+\newpage
+\addcontentsline{toc}{section}{Bibliography}
+\printbibliography
+
+\end{document}
