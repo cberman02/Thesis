@@ -18,5 +18,8 @@ full_data$vehic_per_capita <- full_data$num_vehic_commute/full_data$pop
 full_data$pop_100000 <- full_data$pop/100000
 full_data$med_inc_10000 <- full_data$med_house_income/10000
 
+full_data <- full_data %>%
+  filter(year >= 2014 & year <= 2019)
+
 #Missing a few UZAs but none from treatment. 26622 - 24990 = 1632 missing observations
 write_csv(full_data,"data/clean/ntd_census.csv")
