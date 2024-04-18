@@ -8,6 +8,7 @@
 *.Rdata
 *.pdf
 *.txt
+*.xlsx
 
 # Session Data files
 .RData
