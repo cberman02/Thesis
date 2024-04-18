@@ -36,7 +36,8 @@ To replicate the project, an internet connection and access to R are required. R
 - `code/merge_data.R`: merges the ACS dataset and the completely clean NTD dataset created previously into the master dataset used for all analysis; saves this dataset as `data/clean/ntd_census.csv`
 - `code/summary_stats.R`: creates summary statistics for all variables used in the regression: saves this output in `figures`
 - `code/analysis_tables.R`: runs regression equation and saves the regression output as `tables/reg_output.csv`
-- `code/figures.R`: creates all figures used in the paper: saves this output in `figures`		
+- `code/figures.R`: creates all figures used in the paper: saves this output in `figures`
+- `code/data_appendix.R`: creates summary statistics for all variable, as well as basic distribution plots
 
 # Data sources
 Here are the main data sources. 
