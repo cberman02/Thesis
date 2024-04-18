@@ -6,7 +6,6 @@
 *.csv
 *.dta
 *.Rdata
-*.pdf
 *.txt
 *.xlsx
 
