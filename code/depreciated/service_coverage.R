@@ -16,19 +16,17 @@ pinellas <- fl %>%
   filter(NAMELSAD == "Pinellas County")
 
 
-
-# Plot
+# Plot (Top one used in poster)
 ggplot() +
   geom_sf(data = pinellas, fill = "transparent", color = "black") +  # Plot UZA shapefile
-  #geom_sf(data = hillsborough, fill = "transparent", color = "black") +  # Plot UZA shapefile
-  geom_point(data = pinellas_pre, aes(x = LONG, y = LAT, fill = perc), shape = 21, size = 2, alpha = 0.7) +  # Plot stops
-  scale_fill_gradient(low = "green", high = "red", name = "Percentage of Ridership") +  # Gradient legend
-  labs(title = "Transit Stops in St. Petersburg-Tampa UZA", x = "Longitude", y = "Latitude") +  # Labels
+  geom_point(data = pinellas_post, aes(x = long, y = lat), shape = 21, size = 2, alpha = 0.7, color = "#707170", fill = "#881124") +  # Plot stops
+  labs(title = "Transit Stops in Pinellas County", x = "Longitude", y = "Latitude") +  # Labels
   theme_minimal()  # Minimal theme
+ggsave("images/transit_stops.pdf")
 
 ggplot() +
   geom_sf(data = pinellas_uza, fill = "transparent", color = "black") +  # Plot UZA shapefile
-  geom_point(data = pinellas_post, aes(x = long, y = lat, fill = perc), shape = 21, size = 2, alpha = 0.5) +  # Plot stops
+  geom_point(data = pinellas_post, aes(x = long, y = lat, fill = perc), shape = 16, size = 2, alpha = 0.5) +  # Plot stops
   scale_fill_gradient(low = "green", high = "red", name = "Percentage of Ridership") +  # Gradient legend
   labs(title = "Transit Stops in St. Petersburg-Tampa UZA", x = "Longitude", y = "Latitude") +  # Labels
   theme_minimal()  # Minimal theme

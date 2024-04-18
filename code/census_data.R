@@ -1,6 +1,7 @@
-#API Key: 3528235a2cdd9715af39bec20ec64ea0c85f9c4c
-# Set your Census API key
-Sys.setenv("CENSUS_KEY" = "3528235a2cdd9715af39bec20ec64ea0c85f9c4c")
+# You will be prompted for your Census API key here for replication. 
+#This can be obtained at https://api.census.gov/data/key_signup.html
+census_api_key = readline("Enter your Census API key:")
+Sys.setenv("CENSUS_KEY" = census_api_key)
 
 
 # Specify the geography and survey
@@ -21,9 +22,8 @@ vars <- c(
   "B08015_001" #Number of vehicles used in commuting
 )
 
-# Years from 2005 to present
-years <- 2006:2022
-years <- years[years != 2020] #2020 data is missing
+# Years from 2010 to 2019
+years <- 2010:2019
 
 # Initialize an empty data frame to store results
 all_uza <- data.frame()
@@ -53,6 +53,10 @@ all_uza <- all_uza %>%
 
 colnames(all_uza) <- c("geoid","uza_name","year","med_age", "pop","white","black","asian","hispanic","poverty","med_house_income","bach","num_vehic_commute")
 
+all_uza <- all_uza %>%
+  mutate(across(c(hispanic, white, black, asian), ~ifelse(is.na(.x), 0, .x)))
+
+
 #Converting below vars to proportions
 all_uza$white <- all_uza$white / all_uza$pop
 all_uza$black <- all_uza$black / all_uza$pop
@@ -60,4 +64,4 @@ all_uza$asian <- all_uza$asian / all_uza$pop
 all_uza$hispanic <- all_uza$hispanic / all_uza$pop
 all_uza$poverty <- all_uza$poverty / all_uza$pop
 
-write_csv(all_uza, "data/clean/all_uza.csv")
+write_csv(all_uza, "data/clean/census.csv")

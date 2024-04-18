@@ -66,6 +66,9 @@ all_transit$time_to_treat <- ifelse(all_transit$month_treat > 0, all_transit$mon
 
 write_csv(all_transit, "data/transit_treated_new_start.csv")
 
+#Reading in census transit data
+all_transit_census <- read_csv("data/clean/all_transit_census.csv")
+
 #Reg and coef plot
 base_twfe <- feols(log_ridership ~ i(time_to_treat, treated,
                                      ref = c(-1, -1000)) | agency + date, all_transit)
@@ -91,6 +94,7 @@ iplot(base_twfe,
       xlab     = "Time to Treatment",
       ref.line      = 0
 )
+
 
 # The aggregate effect for each period
 agg_coef = aggregate(sa_did, "(ti.*at)::(-?[[:digit:]]+)")[c(39:56),]
@@ -125,21 +129,32 @@ legend("bottomleft", col = c(1, 4), pch = c(20, 17),
        legend = c("TWFE", "IW Estimates"), bty = "n")
 dev.off()
 
-# To get the total ATT, you can use summary with the agg argument:
-#summary(sa_did_full, agg = "ATT")
-#summary(sa_did, agg = "ATT")
-twfe_did_base <- feols(log_ridership ~ i(time_to_treat, ref = c(-1,-1000)) | agency + date, data = all_transit)
 
-aggregate(sa_did_full, agg = "cohort")
-aggregate(sa_did, agg = "cohort")
+#Cohort coef plot
+agg_coef_cohort <- as.data.frame(rbind(att_sa_fe,att_base_fe))
+agg_coef_cohort$group <- c("Pinellas Suncoast Transit Authority",
+                           "Orange County Transportation Authority",
+                           "Greater Dayton Regional Transit Authority",
+                           "City of Charlotte North Carolina",
+                           "Pierce County and Detroit",
+                           "Research Triangle",
+                           "ATT")
+agg_coef_cohort$ci_low <- agg_coef_cohort$Estimate - 1.96 * agg_coef_cohort$`Std. Error`
+agg_coef_cohort$ci_hi <- agg_coef_cohort$Estimate + 1.96 * agg_coef_cohort$`Std. Error`
 
-iplot(sa_did)
-
-
-#SOME DIFFERENT FIXED EFFECTS w/ ACS data (Come back to later)
-
-
-
+catt_plot <- ggplot(agg_coef_cohort, aes(x=Estimate, y=group)) + 
+  geom_point(col = 4) +
+  geom_errorbarh(aes(xmin = ci_low, xmax = ci_hi), height = 0.1, col = 4, size = 0.75) +
+  labs(y = "Cohort",
+       title = "Cohort Average Treated Effect and Average Treated Effect") +
+  geom_vline(xintercept = 0) +
+  theme(
+    panel.border = element_rect(color = "black", fill = NA, size = 1),  # Hard lines around the plot
+    panel.grid.major = element_line(color = "gray", linetype = "dashed"),
+    plot.background = element_rect(fill = "white"),  # Set background color to white
+    panel.background = element_rect(fill = "white") 
+  )
+ggsave("images/catt_plot_uza_date.pdf", plot = catt_plot, width = 8, height = 6)
 
 
 

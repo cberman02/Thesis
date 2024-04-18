@@ -1,62 +1,22 @@
-transit_data <- read_csv("data/transit_data.csv") %>%
-  filter(year >= 2005)
-census_data <- read_csv("data/clean/all_uza.csv") 
-census_data$uza_name <- gsub("\\s*\\([^()]*\\)\\s*", "", census_data$uza_name)
-census_data$uza_name <- gsub("\\s*urbanized\\s*area\\s*", "", census_data$uza_name, ignore.case = TRUE)
+#Reading and cleaning datasets
+all_transit <- read_csv("data/clean/treated_ntd.csv")
+all_transit$uace_cd <- ifelse(all_transit$uza_name == "Livermore, CA", 50527, all_transit$uace_cd)
+census <- read_csv("data/clean/census.csv") %>%
+  filter(year >= 2014 & year <= 2019)
+census$uza_name <- gsub("\\s*\\([^()]*\\)\\s*", "", census$uza_name)
+census$uza_name <- gsub("\\s*urbanized\\s*area\\s*", "", census$uza_name, ignore.case = TRUE)
 
-transit_rankings <- read_csv("data/transit_rankings.csv")
-
-#Merging data. Changed left -> inner. 338 different cities all with matching census data (excluding 2020)
-full_data <- transit_data %>%
-  filter(year != 2020) %>%
-  inner_join(census_data, by = c("uace_cd" = "geoid", "year" = "year"))
-
-#Repeating 2019 ACS data for 2020 variables
-acs_2020 <- census_data %>%
-  filter(year == 2019) %>%
-  mutate(year=2020)
-full_data_2020 <- transit_data %>%
-  filter(year == 2020) %>%
-  inner_join(acs_2020, by = c("uace_cd" = "geoid", "year" = "year"))
-
-full_data <- full_data %>%
-  rbind(full_data_2020)
-
-# Perform an anti-join to get the unmatched rows from the original merge
-unmatched_rows <- anti_join(transit_data,census_data, by = c("uace_cd" = "geoid", "year" = "year"))
-
-# Next, try merging the unmatched rows with census_data by UZA name
-full_data_uza <- unmatched_rows %>%
-  inner_join(census_data, by = c("uza_name" = "uza_name","year" = "year"))
-
-#Merging 2020 ACS data with unmatched rows by uza_name
-full_data_uza_2020 <- unmatched_rows %>%
-  filter(year == 2020) %>%
-  inner_join(acs_2020, by = c("uza_name" = "uza_name", "year" = "year"))
-
-full_data_uza <- full_data_uza %>%
-  rbind(full_data_uza_2020) %>%
-  select(-geoid)
-
-full_data <- full_data %>%
+#Merging 2016-2019 data by geoid
+full_data <- all_transit %>%
+  inner_join(census, by = c("uace_cd" = "geoid", "year" = "year")) %>%
   select(-uza_name.y) %>%
-  rename(uza_name = uza_name.x) %>%
-  rbind(full_data_uza)
+  rename(uza_name = uza_name.x)
 
-full_data$uza_name_2 = full_data$uza_name
-full_data <- separate(full_data, col = uza_name_2, into = c("city", "state"), sep = ", ", remove = FALSE) %>%
-  select(-uza_name_2)
+full_data$ridership_pop <- full_data$ridership/full_data$pop
+full_data$agency_id <- as.numeric(factor(full_data$agency))
+full_data$vehic_per_capita <- full_data$num_vehic_commute/full_data$pop
+full_data$pop_100000 <- full_data$pop/100000
+full_data$med_inc_10000 <- full_data$med_house_income/10000
 
-
-
-write_csv(full_data, "data/transit_census.csv")
-
-full_data <- left_join(full_data, transit_rankings, by = "uza_name")
-
-#Checking to see if any transit rankings are missing
-#missing_elements <- transit_rankings$uza_name[!transit_rankings$uza_name %in% full_data$uza_name]
-
-
-write_csv(full_data, "data/transit_census_rankings.csv")
-
-                              
+#Missing a few UZAs but none from treatment. 26622 - 24990 = 1632 missing observations
+write_csv(full_data,"data/clean/ntd_census.csv")
