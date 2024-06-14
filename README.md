@@ -1,4 +1,4 @@
-# Undergraduate Thesis: Assessing the Impact of Public Transit-Rideshare Partnership 
+# Undergraduate Thesis: Assessing the Impact of Public Transit-Rideshare Partnerships 
 
 This project analyzes the effect of public transit-ridershare partnerships on transit ridership. It utilizes data from the National Transit Databse (NTD) to determine agency ridership numbers and the American Community Survey (ACS) to account for the demographics of the urban areas that the agencies are based in. I find a nearly 5% increase in ridership as a result of these partnerships.
 
